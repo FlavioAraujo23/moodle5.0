@@ -1,0 +1,36 @@
+version: '3'
+
+services:
+  db:
+    image: mariadb:10.6
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - moodle_db_data:/var/lib/mysql
+    restart: always
+
+  moodle:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      MOODLE_DB_HOST: db
+      MOODLE_DB_PORT: 3306
+      MOODLE_DB_NAME: ${MYSQL_DATABASE}
+      MOODLE_DB_USER: ${MYSQL_USER}
+      MOODLE_DB_PASSWORD: ${MYSQL_PASSWORD}
+      MOODLE_URL: ${MOODLE_URL}
+    volumes:
+      - moodle_data:/var/www/html
+      - moodle_moodledata:/var/www/moodledata
+    restart: always
+    depends_on:
+      - db
+
+volumes:
+  moodle_db_data:
+  moodle_data:
+  moodle_moodledata:
